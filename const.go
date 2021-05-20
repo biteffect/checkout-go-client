@@ -1,6 +1,8 @@
 package liqpay
 
 const (
-	CheckoutApiUrl = "https://checkout.globalmoney.cash/api"
+	SecureKeyLiqPay string = "liqpay"
+
+	CheckoutApiUrl = "https://checkout.globalmoney.cash/api/request"
 	encodeStd      = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-!"
 )
