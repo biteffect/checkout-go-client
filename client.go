@@ -75,6 +75,9 @@ func (c *Client) Offset(amount gmfin.Amount, currency gmfin.Currency, destinatio
 	if len(opt.OrderId) > 0 {
 		req["order_id"] = opt.OrderId
 	}
+	if opt.Date != nil {
+		req["date"] = opt.Date
+	}
 	res := new(OffsetStatus)
 	if err := c.callApi(req, res); err != nil {
 		return nil, err

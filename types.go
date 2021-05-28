@@ -64,6 +64,7 @@ type RequestOptions struct {
 	Info        string
 	Description string
 	ServerUrl   string
+	Date        *LiqPayTime
 }
 
 type SplitRule struct {
