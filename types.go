@@ -67,6 +67,16 @@ type RequestOptions struct {
 	Date        *LiqPayTime
 }
 
+type ThreeDsOptions struct {
+	AcceptHeader string `json:"accept_header,omitempty"`
+	Lang         string `json:"lang,omitempty"`
+	ColorDepth   string `json:"color_depth,omitempty"`
+	ScreenHeight string `json:"screen_height,omitempty"`
+	ScreenWidth  string `json:"screen_width,omitempty"`
+	TzUserAagent string `json:"user_agent,omitempty"`
+	Fingerprint  string `json:"fingerprint,omitempty"`
+}
+
 type SplitRule struct {
 	Amount     gmfin.Amount `json:"amount"`
 	BalanceKey PublicKey    `json:"balance_key"`
