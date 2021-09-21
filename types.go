@@ -73,7 +73,7 @@ type PayRequestEnvironment struct {
 	ColorDepth   string `json:"color_depth,omitempty"`
 	ScreenHeight string `json:"screen_height,omitempty"`
 	ScreenWidth  string `json:"screen_width,omitempty"`
-	UserAagent   string `json:"user_agent,omitempty"`
+	UserAgent    string `json:"user_agent,omitempty"`
 	Fingerprint  string `json:"fingerprint,omitempty"`
 }
 
