@@ -67,7 +67,7 @@ type RequestOptions struct {
 	Date        *LiqPayTime
 }
 
-type ThreeDsOptions struct {
+type PayRequestEnvironment struct {
 	AcceptHeader string `json:"accept_header,omitempty"`
 	Lang         string `json:"lang,omitempty"`
 	ColorDepth   string `json:"color_depth,omitempty"`
