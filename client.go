@@ -57,6 +57,17 @@ func (c *Client) Refund(orderId string, amount gmfin.Amount, opt PayRequestOptio
 	return res, nil
 }
 
+func (c *Client) PayQr(req *PayRequest) (*OrderStatus, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	res := new(OrderStatus)
+	if err := c.callApi(req.Map("payqr", &c.publicKey), res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 func (c *Client) Offset(amount gmfin.Amount, currency gmfin.Currency, destinations []SplitRule, opt OffsetRequestOptions) (*OffsetStatus, error) {
 	req := c.getBaseRequest("offset")
 	req["amount"] = amount
@@ -90,6 +101,9 @@ func (c *Client) OrderStatus(orderId string) (*OrderStatus, error) {
 	req["order_id"] = orderId
 	res := new(OrderStatus)
 	if err := c.callApi(req, res); err != nil {
+		if err.Error() == "unknown order id" {
+			err = nil
+		}
 		return nil, err
 	}
 	return res, nil
@@ -98,6 +112,15 @@ func (c *Client) OrderStatus(orderId string) (*OrderStatus, error) {
 func (c *Client) OffsetStatus(offsetId string) (*OffsetStatus, error) {
 	req := c.getBaseRequest("status")
 	req["offset_id"] = offsetId
+	res := new(OffsetStatus)
+	if err := c.callApi(req, res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (c *Client) InfoMerchant() (*OffsetStatus, error) {
+	req := c.getBaseRequest("agent_info_merchant")
 	res := new(OffsetStatus)
 	if err := c.callApi(req, res); err != nil {
 		return nil, err
@@ -133,10 +156,11 @@ func (c *Client) callApi(req apiRequest, res interface{}) error {
 	if err != nil {
 		return err
 	}
-	data = []byte(base64.StdEncoding.EncodeToString(data))
+	dataStr := base64.StdEncoding.EncodeToString(data)
+	signStr := c.sign([]byte(dataStr))
 	form := url.Values{
-		"data":      {string(data)},
-		"signature": {c.sign(data)},
+		"data":      {dataStr},
+		"signature": {signStr},
 	}
 
 	httpRes, err := c.httpClient.Post(c.url.String(), "application/x-www-form-urlencoded",
@@ -166,9 +190,9 @@ func (c *Client) callApi(req apiRequest, res interface{}) error {
 }
 
 func (c *Client) sign(data []byte) string {
-	hasher := sha1.New()
-	hasher.Write(c.secret)
-	hasher.Write(data)
-	hasher.Write(c.secret)
-	return base64.StdEncoding.EncodeToString(hasher.Sum(nil))
+	h := sha1.New()
+	h.Write(c.secret)
+	h.Write(data)
+	h.Write(c.secret)
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }

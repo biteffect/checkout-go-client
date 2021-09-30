@@ -27,9 +27,8 @@ type OrderStatus struct {
 	SenderCardMask2   string          `json:"sender_card_mask2,omitempty"`
 
 	// Custtom GlobalMoney propertioes
-	QrCode           []string `json:"qr_code,omitempty"`
-	CheckoutShortUrl string   `json:"checkout_short_url,omitempty"`
-	CheckoutUrl      string   `json:"checkout_url,omitempty"`
+	QrCode      []string `json:"qr_code,omitempty"`
+	PayShortUrl string   `json:"checkout_short_url,omitempty"`
 }
 
 type OffsetStatus struct {
@@ -72,14 +71,4 @@ type SplitRule struct {
 	BalanceKey PublicKey    `json:"balance_key"`
 	ServerUrl  *url.URL     `json:"server_url,omitempty"`
 	Info       string       `json:"info,omitempty"`
-}
-
-type PayRequestEnvironment struct {
-	AcceptHeader string `json:"accept_header,omitempty"`
-	Lang         string `json:"lang,omitempty"`
-	ColorDepth   int    `json:"color_depth,omitempty"`
-	ScreenHeight int    `json:"screen_height,omitempty"`
-	ScreenWidth  int    `json:"screen_width,omitempty"`
-	UserAgent    string `json:"user_agent,omitempty"`
-	Fingerprint  string `json:"fingerprint,omitempty"`
 }
