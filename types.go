@@ -7,26 +7,30 @@ import (
 	"net/url"
 )
 
+type Status struct {
+	Version     int             `json:"version"`
+	PublicKey   PublicKey       `json:"public_key"`
+	Action      string          `json:"action,omitempty"`
+	Status      string          `json:"status,omitempty"`
+	Amount      gmfin.Amount    `json:"amount" validate:"gte=0"`
+	AmountPaid  gmfin.Amount    `json:"amount_paid,omitempty" validate:"gte=0"`
+	Currency    *gmfin.Currency `json:"currency"`
+	Description string          `json:"description,omitempty"`
+	CreateDate  LiqPayTime      `json:"create_date,omitempty"`
+	EndDate     *LiqPayTime     `json:"end_date,omitempty"`
+}
+
 type OrderStatus struct {
-	Version           int             `json:"version"`
-	PublicKey         PublicKey       `json:"public_key"`
-	Action            string          `json:"action,omitempty"`
-	PayType           string          `json:"paytype,omitempty"`
-	Amount            gmfin.Amount    `json:"amount" validate:"gte=0"`
-	AmountPaid        gmfin.Amount    `json:"amount_paid,omitempty" validate:"gte=0"`
-	Currency          *gmfin.Currency `json:"currency"`
-	Description       string          `json:"description,omitempty"`
-	OrderId           string          `json:"order_id,omitempty"`
-	OrderData         string          `json:"order_data,omitempty"`
-	LiqpayOrderId     string          `json:"liqpay_order_id,omitempty"`
-	PaymentId         string          `json:"payment_id,omitempty"`
-	Info              string          `json:"info,omitempty"`
-	CreateDate        LiqPayTime      `json:"create_date,omitempty"`
-	EndDate           *LiqPayTime     `json:"end_date,omitempty"`
-	Ip                string          `json:"ip,omitempty"`
-	Status            string          `json:"status,omitempty"`
-	StatusDescription string          `json:"status_description,omitempty"`
-	SenderCardMask2   string          `json:"sender_card_mask2,omitempty"`
+	Status
+	PayType           string `json:"paytype,omitempty"`
+	OrderId           string `json:"order_id,omitempty"`
+	OrderData         string `json:"order_data,omitempty"`
+	LiqpayOrderId     string `json:"liqpay_order_id,omitempty"`
+	PaymentId         string `json:"payment_id,omitempty"`
+	Info              string `json:"info,omitempty"`
+	Ip                string `json:"ip,omitempty"`
+	StatusDescription string `json:"status_description,omitempty"`
+	SenderCardMask2   string `json:"sender_card_mask2,omitempty"`
 
 	// Custtom GlobalMoney propertioes
 	QrCode      []string `json:"qr_code,omitempty"`
@@ -34,19 +38,11 @@ type OrderStatus struct {
 }
 
 type OffsetStatus struct {
-	Version       int             `json:"version"`
-	PublicKey     PublicKey       `json:"public_key"`
-	Action        string          `json:"action,omitempty"`
-	PayType       string          `json:"paytype,omitempty"`
-	Status        string          `json:"status,omitempty"`
-	Amount        gmfin.Amount    `json:"amount" validate:"gte=0"`
-	Currency      *gmfin.Currency `json:"currency"`
-	Info          string          `json:"info,omitempty"`
-	CreateDate    LiqPayTime      `json:"create_date,omitempty"`
-	EndDate       *LiqPayTime     `json:"end_date,omitempty"`
-	OrderId       string          `json:"order_id,omitempty"`
-	OrderData     string          `json:"order_data,omitempty"`
-	LiqpayOrderId string          `json:"liqpay_order_id,omitempty"`
+	Status
+	Info          string `json:"info,omitempty"`
+	OffsetId      string `json:"offset_id,omitempty"`
+	OffsetData    string `json:"offset_data,omitempty"`
+	LiqpayOrderId string `json:"liqpay_order_id,omitempty"`
 }
 
 type PayRequestOptions struct {
@@ -78,6 +74,7 @@ type OffsetRequestOptions struct {
 
 type RequestOptions struct {
 	BalanceKey  *PublicKey
+	ExternalId  string
 	OrderData   string
 	Info        string
 	Description string
