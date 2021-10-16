@@ -7,7 +7,7 @@ import (
 	"net/url"
 )
 
-type Status struct {
+type CommonStatus struct {
 	Version     int             `json:"version"`
 	PublicKey   PublicKey       `json:"public_key"`
 	Action      string          `json:"action,omitempty"`
@@ -21,7 +21,7 @@ type Status struct {
 }
 
 type OrderStatus struct {
-	Status
+	CommonStatus
 	PayType           string `json:"paytype,omitempty"`
 	OrderId           string `json:"order_id,omitempty"`
 	OrderData         string `json:"order_data,omitempty"`
@@ -38,7 +38,7 @@ type OrderStatus struct {
 }
 
 type OffsetStatus struct {
-	Status
+	CommonStatus
 	Info          string `json:"info,omitempty"`
 	OffsetId      string `json:"offset_id,omitempty"`
 	OffsetData    string `json:"offset_data,omitempty"`
