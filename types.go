@@ -49,21 +49,55 @@ type OffsetStatus struct {
 
 type PayRequestOptions struct {
 	RequestOptions
-	Splits []SplitRule
+	ResultUrl      string `json:"result_url,omitempty"`
+	resultUrlDelay int    `json:"result_url_delay"`
+	Splits         []SplitRule
+}
+
+func (r *PayRequestOptions) ReturnDelay(delay int) {
+	r.resultUrlDelay = delay
+}
+
+func (r *PayRequestOptions) Fill(in map[string]interface{}) map[string]interface{} {
+	in = r.RequestOptions.Fill(in)
+	if len(r.ResultUrl) > 0 {
+		in["result_url"] = r.ResultUrl
+		if r.resultUrlDelay >= 0 {
+			in["result_url_delay"] = r.resultUrlDelay
+		}
+	}
+	return in
 }
 
 type OffsetRequestOptions struct {
 	RequestOptions
+	Splits []SplitRule
 }
 
 type RequestOptions struct {
 	BalanceKey  *PublicKey
-	OrderId     string
 	OrderData   string
 	Info        string
 	Description string
 	ServerUrl   string
+	Language    string
 	Date        *LiqPayTime
+}
+
+func (r *RequestOptions) Fill(in map[string]interface{}) map[string]interface{} {
+	if len(r.Description) > 0 {
+		in["description"] = r.Description
+	}
+	if r.BalanceKey != nil {
+		in["balance_key"] = r.BalanceKey.String()
+	}
+	if r.Date != nil {
+		in["date"] = r.Date
+	}
+	if len(r.Language) == 2 {
+		in["language"] = r.Language
+	}
+	return in
 }
 
 type SplitRule struct {
@@ -71,4 +105,9 @@ type SplitRule struct {
 	BalanceKey PublicKey    `json:"balance_key"`
 	ServerUrl  *url.URL     `json:"server_url,omitempty"`
 	Info       string       `json:"info,omitempty"`
+}
+
+type ItemRule struct {
+	Title  string       `json:"title,omitempty"`
+	Amount gmfin.Amount `json:"amount"`
 }

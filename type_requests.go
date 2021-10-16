@@ -19,7 +19,7 @@ type PayRequest struct {
 	OrderData      string          `json:"order_data"`
 	Language       string          `json:"language,omitempty"`
 	ResultUrl      string          `json:"result_url,omitempty"`
-	ResultUrlDelay int             `json:"result_url_delay,omitempty"`
+	ResultUrlDelay int             `json:"result_url_delay"`
 	ServerUrl      string          `json:"server_url,omitempty"`
 	Customer       string          `json:"customer,omitempty"`
 	Info           string          `json:"info,omitempty"`
@@ -55,6 +55,12 @@ func (pr *PayRequest) Map(action string, key *PublicKey) map[string]interface{} 
 	}
 	if pr.Date != nil {
 		req["date"] = pr.Date
+	}
+	if len(pr.ResultUrl) > 0 {
+		req["result_url"] = pr.ResultUrl
+		if pr.ResultUrlDelay > 0 {
+			req["result_url_delay"] = pr.ResultUrlDelay
+		}
 	}
 	return req
 }

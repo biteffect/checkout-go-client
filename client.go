@@ -43,12 +43,12 @@ type Client struct {
 	secret     []byte
 }
 
-func (c *Client) Refund(orderId string, amount gmfin.Amount, opt PayRequestOptions) (*OrderStatus, error) {
+func (c *Client) Refund(orderId string, amount gmfin.Amount, opt *PayRequestOptions) (*OrderStatus, error) {
 	req := c.getBaseRequest("refund")
 	req["order_id"] = orderId
 	req["amount"] = amount
-	if len(opt.Description) > 0 {
-		req["description"] = opt.Description
+	if opt != nil {
+		req = opt.Fill(req)
 	}
 	res := new(OrderStatus)
 	if err := c.callApi(req, res); err != nil {
@@ -57,37 +57,32 @@ func (c *Client) Refund(orderId string, amount gmfin.Amount, opt PayRequestOptio
 	return res, nil
 }
 
-func (c *Client) PayQr(req *PayRequest) (*OrderStatus, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
+func (c *Client) PayQr(orderId string, amount gmfin.Amount, currency gmfin.Currency, opt *PayRequestOptions) (*OrderStatus, error) {
+	req := c.getBaseRequest("payqr")
+	req["order_id"] = orderId
+	req["amount"] = amount
+	req["currency"] = currency
+	if opt != nil {
+		req = opt.Fill(req)
 	}
 	res := new(OrderStatus)
-	if err := c.callApi(req.Map("payqr", &c.publicKey), res); err != nil {
+	if err := c.callApi(req, res); err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (c *Client) Offset(amount gmfin.Amount, currency gmfin.Currency, destinations []SplitRule, opt OffsetRequestOptions) (*OffsetStatus, error) {
+func (c *Client) Offset(amount gmfin.Amount, currency gmfin.Currency, opt *OffsetRequestOptions) (*OffsetStatus, error) {
 	req := c.getBaseRequest("offset")
 	req["amount"] = amount
 	req["currency"] = currency
-	if data, err := json.Marshal(destinations); err != nil {
-		return nil, err
-	} else {
-		req["split_rules"] = string(data)
-	}
-	if opt.BalanceKey != nil {
-		req["balance_key"] = opt.BalanceKey.String()
-	}
-	if len(opt.Description) > 0 {
-		req["description"] = opt.Description
-	}
-	if len(opt.OrderId) > 0 {
-		req["order_id"] = opt.OrderId
-	}
-	if opt.Date != nil {
-		req["date"] = opt.Date
+	if opt != nil {
+		req = opt.Fill(req)
+		if data, err := json.Marshal(opt.Splits); err != nil {
+			return nil, err
+		} else {
+			req["split_rules"] = string(data)
+		}
 	}
 	res := new(OffsetStatus)
 	if err := c.callApi(req, res); err != nil {
