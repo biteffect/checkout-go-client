@@ -47,9 +47,10 @@ type OffsetStatus struct {
 
 type PayRequestOptions struct {
 	RequestOptions
-	ResultUrl      string `json:"result_url,omitempty"`
-	resultUrlDelay int    `json:"result_url_delay"`
-	Splits         []SplitRule
+	ResultUrl      string      `json:"result_url,omitempty"`
+	resultUrlDelay int         `json:"result_url_delay"`
+	Splits         []SplitRule `json:"split_rules,omitempty"`
+	CartItems      []CartItem  `json:"cart_items,omitempty"`
 }
 
 func (r *PayRequestOptions) ReturnDelay(delay int) {
