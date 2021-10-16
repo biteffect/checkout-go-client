@@ -1,6 +1,8 @@
 package liqpay
 
 import (
+	"encoding/json"
+	"fmt"
 	gmfin "github.com/biteffect/go.gm-fin"
 	"net/url"
 )
@@ -107,7 +109,62 @@ type SplitRule struct {
 	Info       string       `json:"info,omitempty"`
 }
 
-type ItemRule struct {
+type CartItem struct {
 	Label  string       `json:"label"`
 	Amount gmfin.Amount `json:"amount"`
+}
+
+type CartItems []*CartItem
+
+func (i *CartItems) HasItems() bool {
+	return i != nil && len(*i) > 0
+}
+
+func (i *CartItems) Sum() gmfin.Amount {
+	out := gmfin.AmountFromCents(0)
+	if i != nil {
+		for _, v := range *i {
+			out = out.Add(v.Amount)
+		}
+	}
+	return out
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (i *CartItems) UnmarshalJSON(bytes []byte) error {
+	//str := strings.Trim(string(bytes), "\" ")
+	if len(bytes) < 2 {
+		return nil
+	}
+	v := ""
+	err := json.Unmarshal(bytes, &v)
+	if err != nil {
+		return err
+	}
+	list := make([]*CartItem, 0)
+	err = json.Unmarshal([]byte(v), &list)
+	if err != nil {
+		return err
+	}
+	for _, v := range list {
+		if v.Amount < 0 {
+			return fmt.Errorf("cart item %s is negative", v.Label)
+		}
+	}
+	*i = list
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaler interface.
+func (i *CartItems) MarshalJSON() (out []byte, err error) {
+	out = []byte{}
+	if !i.HasItems() {
+		return out, nil
+	}
+	out, err = json.Marshal(i)
+	if err != nil {
+		return
+	}
+	out = []byte("\"" + string(out) + "\"")
+	return
 }
