@@ -127,6 +127,13 @@ func (i *CartItems) Sum() gmfin.Amount {
 	return out
 }
 
+func (i *CartItems) Items() []*CartItem {
+	if i == nil {
+		return make([]*CartItem, 0)
+	}
+	return []*CartItem(*i)
+}
+
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (i *CartItems) UnmarshalJSON(bytes []byte) error {
 	//str := strings.Trim(string(bytes), "\" ")
