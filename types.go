@@ -108,6 +108,6 @@ type SplitRule struct {
 }
 
 type ItemRule struct {
-	Title  string       `json:"title,omitempty"`
+	Label  string       `json:"label"`
 	Amount gmfin.Amount `json:"amount"`
 }
