@@ -97,6 +97,9 @@ func (r *RequestOptions) Fill(in map[string]interface{}) map[string]interface{} 
 	if len(r.Language) == 2 {
 		in["language"] = r.Language
 	}
+	if len(r.OrderId) > 0 {
+		in["order_id"] = r.OrderId
+	}
 	return in
 }
 

@@ -45,11 +45,11 @@ type Client struct {
 
 func (c *Client) Refund(orderId string, amount gmfin.Amount, opt *PayRequestOptions) (*OrderStatus, error) {
 	req := c.getBaseRequest("refund")
-	req["order_id"] = orderId
 	req["amount"] = amount
 	if opt != nil {
 		req = opt.Fill(req)
 	}
+	req["order_id"] = orderId
 	res := new(OrderStatus)
 	if err := c.callApi(req, res); err != nil {
 		return nil, err
@@ -59,12 +59,12 @@ func (c *Client) Refund(orderId string, amount gmfin.Amount, opt *PayRequestOpti
 
 func (c *Client) PayQr(orderId string, amount gmfin.Amount, currency gmfin.Currency, opt *PayRequestOptions) (*OrderStatus, error) {
 	req := c.getBaseRequest("payqr")
-	req["order_id"] = orderId
 	req["amount"] = amount
 	req["currency"] = currency
 	if opt != nil {
 		req = opt.Fill(req)
 	}
+	req["order_id"] = orderId
 	res := new(OrderStatus)
 	if err := c.callApi(req, res); err != nil {
 		return nil, err
