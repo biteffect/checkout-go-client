@@ -75,7 +75,7 @@ type OffsetRequestOptions struct {
 
 type RequestOptions struct {
 	BalanceKey  *PublicKey
-	ExternalId  string
+	OrderId     string
 	OrderData   string
 	Info        string
 	Description string
