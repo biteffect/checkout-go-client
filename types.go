@@ -47,6 +47,7 @@ type OffsetStatus struct {
 
 type PayRequestOptions struct {
 	RequestOptions
+	RefererDomain  string      `json:"referer_domain,omitempty"`
 	ResultUrl      string      `json:"result_url,omitempty"`
 	resultUrlDelay int         `json:"result_url_delay"`
 	Splits         []SplitRule `json:"split_rules,omitempty"`
