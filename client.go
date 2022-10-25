@@ -7,7 +7,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/biteffect/go.gm-fin"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -41,6 +43,27 @@ type Client struct {
 	url        *url.URL
 	publicKey  PublicKey
 	secret     []byte
+}
+
+func (c *Client) PayWithCard(orderId string, amount gmfin.Amount, card gmfin.CreditCard, opt *PayRequestOptions) (*OrderStatus, error) {
+	if err := card.Validate(); err != nil {
+		return nil, err
+	}
+	req := c.getBaseRequest("pay")
+	req["amount"] = amount
+	if opt != nil {
+		req = opt.Fill(req)
+	}
+	req["order_id"] = orderId
+	req["card"] = card.NumberString()
+	req["card_exp_month"] = fmt.Sprintf("%v", int(card.ExpiryMonth))
+	req["card_exp_year"] = fmt.Sprintf("%v", card.ExpiryYear)
+	req["card_cvv"] = fmt.Sprintf("%v", card.CardSecurityCode)
+	res := new(OrderStatus)
+	if err := c.callApi(req, res); err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (c *Client) Refund(orderId string, amount gmfin.Amount, opt *PayRequestOptions) (*OrderStatus, error) {
@@ -173,7 +196,12 @@ func (c *Client) callApi(req apiRequest, res interface{}) error {
 		ErrDescription string `json:"err_description"`
 	}{}
 
-	if err := json.NewDecoder(httpRes.Body).Decode(&errRes); err != nil {
+	rawRes, err := io.ReadAll(httpRes.Body)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(rawRes, &errRes); err != nil {
 		return err
 	}
 
