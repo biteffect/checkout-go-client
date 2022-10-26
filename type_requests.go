@@ -75,3 +75,7 @@ type PayRequestEnvironment struct {
 	Fingerprint  string `json:"fingerprint,omitempty"`
 	Tz           int    `json:"tz,omitempty"`
 }
+
+func (req *PayRequestEnvironment) Is3dsReady() bool {
+	return req != nil && len(req.AcceptHeader) > 0 && len(req.UserAgent) > 0 && req.ColorDepth > 0 && req.ScreenWidth > 0 && req.ScreenHeight > 0
+}
