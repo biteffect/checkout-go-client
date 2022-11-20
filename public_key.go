@@ -4,7 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/base64"
 	"errors"
-	"github.com/satori/go.uuid"
+	"github.com/gofrs/uuid"
 	"strings"
 )
 
